@@ -33,24 +33,59 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * @19.1版写法
+ */
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  ref?: React.Ref<HTMLButtonElement>; // ✅ 直接声明 ref 作为 prop
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button';
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  },
-);
-Button.displayName = 'Button';
+
+ const Button = ({
+  className,
+  variant,
+  size,
+  asChild = false,
+  ref,
+  ...props
+}: ButtonProps) =>{
+  const Comp = asChild ? Slot : 'button';
+
+  return (
+    <Comp
+      ref={ref} // ✅ 支持直接传入 ref
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  );
+}
+
+/**
+ * 旧版本版写法
+ */
+// export interface ButtonProps
+//   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+//     VariantProps<typeof buttonVariants> {
+//   asChild?: boolean;
+// }
+
+// const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+//   ({ className, variant, size, asChild = false, ...props }, ref) => {
+//     const Comp = asChild ? Slot : 'button';
+    
+//     return (
+//       <Comp
+//         className={cn(buttonVariants({ variant, size, className }))}
+//         ref={ref}
+//         {...props}
+//       />
+//     );
+//   },
+// );
+// Button.displayName = 'Button';
 
 export { Button, buttonVariants };

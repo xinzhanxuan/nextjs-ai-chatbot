@@ -13,5 +13,24 @@
   "eslint.workingDirectories": [
     { "pattern": "app/*" },
     { "pattern": "packages/*" }
-  ]
+  ],
+  // 使用 Prettier 格式化所有文件
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // 保存时自动格式化
+  "editor.formatOnSave": true,
+
+  // 为特定语言显式指定格式化器（可选但推荐）
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

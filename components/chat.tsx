@@ -1,25 +1,38 @@
-'use client';
+"use client";
 
-import type { Attachment, UIMessage } from 'ai';
-import { useChat } from '@ai-sdk/react';
-import { useEffect, useState } from 'react';
-import useSWR, { useSWRConfig } from 'swr';
-import { ChatHeader } from '@/components/chat-header';
-import type { Vote } from '@/lib/db/schema';
-import { fetcher, fetchWithErrorHandlers, generateUUID } from '@/lib/utils';
-import { Artifact } from './artifact';
-import { MultimodalInput } from './multimodal-input';
-import { Messages } from './messages';
-import type { VisibilityType } from './visibility-selector';
-import { useArtifactSelector } from '@/hooks/use-artifact';
-import { unstable_serialize } from 'swr/infinite';
-import { getChatHistoryPaginationKey } from './sidebar-history';
-import { toast } from './toast';
-import type { Session } from 'next-auth';
-import { useSearchParams } from 'next/navigation';
-import { useChatVisibility } from '@/hooks/use-chat-visibility';
-import { useAutoResume } from '@/hooks/use-auto-resume';
-import { ChatSDKError } from '@/lib/errors';
+/**
+ * Chat 组件：作用概览
+      这个组件是聊天界面的核心交互容器，封装了：
+
+        1 消息输入与提交（支持多模态）
+
+        2 聊天历史展示
+
+        3 投票与自动恢复功能
+
+        4 UI 状态如只读 / 可编辑、AI 回复中、加载等
+ */
+
+import type { Attachment, UIMessage } from "ai";
+import { useChat } from "@ai-sdk/react";
+import { useEffect, useState } from "react";
+import useSWR, { useSWRConfig } from "swr";
+import { ChatHeader } from "@/components/chat-header";
+import type { Vote } from "@/lib/db/schema";
+import { fetcher, fetchWithErrorHandlers, generateUUID } from "@/lib/utils";
+import { Artifact } from "./artifact";
+import { MultimodalInput } from "./multimodal-input";
+import { Messages } from "./messages";
+import type { VisibilityType } from "./visibility-selector";
+import { useArtifactSelector } from "@/hooks/use-artifact";
+import { unstable_serialize } from "swr/infinite";
+import { getChatHistoryPaginationKey } from "./sidebar-history";
+import { toast } from "./toast";
+import type { Session } from "next-auth";
+import { useSearchParams } from "next/navigation";
+import { useChatVisibility } from "@/hooks/use-chat-visibility";
+import { useAutoResume } from "@/hooks/use-auto-resume";
+import { ChatSDKError } from "@/lib/errors";
 
 export function Chat({
   id,
@@ -30,13 +43,13 @@ export function Chat({
   session,
   autoResume,
 }: {
-  id: string;
-  initialMessages: Array<UIMessage>;
-  initialChatModel: string;
-  initialVisibilityType: VisibilityType;
-  isReadonly: boolean;
-  session: Session;
-  autoResume: boolean;
+  id: string; // 聊天会话唯一标识 UUID
+  initialMessages: Array<UIMessage>; // 初始对话历史
+  initialChatModel: string; // 当前使用的 AI 模型（如 GPT-4）
+  initialVisibilityType: VisibilityType; // 私有/公开等状态
+  isReadonly: boolean; // 是否为只读状态
+  session: Session; // 当前用户 session
+  autoResume: boolean; // 是否自动恢复上次对话
 }) {
   const { mutate } = useSWRConfig();
 
@@ -76,7 +89,7 @@ export function Chat({
     onError: (error) => {
       if (error instanceof ChatSDKError) {
         toast({
-          type: 'error',
+          type: "error",
           description: error.message,
         });
       }
@@ -84,25 +97,25 @@ export function Chat({
   });
 
   const searchParams = useSearchParams();
-  const query = searchParams.get('query');
+  const query = searchParams.get("query");
 
   const [hasAppendedQuery, setHasAppendedQuery] = useState(false);
 
   useEffect(() => {
     if (query && !hasAppendedQuery) {
       append({
-        role: 'user',
+        role: "user",
         content: query,
       });
 
       setHasAppendedQuery(true);
-      window.history.replaceState({}, '', `/chat/${id}`);
+      window.history.replaceState({}, "", `/chat/${id}`);
     }
   }, [query, append, hasAppendedQuery, id]);
 
   const { data: votes } = useSWR<Array<Vote>>(
     messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
-    fetcher,
+    fetcher
   );
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
